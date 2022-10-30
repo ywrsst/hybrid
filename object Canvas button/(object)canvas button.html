@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>canvas</title>
+	<style media="screen">
+		#big_canvas{
+			background-color: rgb(15, 255, 35);
+		}
+	</style>
+</head>
+<body>
+	<canvas id="big_canvas" width="800" height="800"></canvas>
+	<script>
+		var big_canvas = document.getElementById("big_canvas");
+        var context_canvas = big_canvas.getContext("2d")
+
+	    var isclick = false;
+
+		class Canvas{
+
+			constructor(big_canvas, context_canvas,C_Color, x,y,C_width,C_height){
+				this.big_canvas = big_canvas;
+				this.context_canvas = context_canvas;
+				this.C_Color = C_Color;
+				this.x= x;
+				this.y= y;
+				this.C_width = C_width;
+				this.C_height = C_height;
+			}
+
+			    S_Canvas(){
+					this.context_canvas.fillStyle = '${this.C_Color}';
+					   this.context_canvas.fillRect(this.x, this.y, this.C_width,this.C_height);
+					   isclick = false;
+				}
+
+			    SS_Canvas(){
+					if(isclick !=true){
+						this.context_canvas.fillStyle = "pink";
+						  this.context_canvas.fillRect(this.x, this.y, this.C_width,this.C_height);
+						  isclick = true;
+
+				}
+			}
+			    Click_Canvas(){
+				     if(isclick ==true){
+						this.context_canvas.fillStyle = "yellow";
+						 this.context_canvas.fillRect(this.x, this.y, this.C_width,this.C_height);
+						 isclick = true;
+					 }
+			}
+			    UClick_Canvas(){
+				     if(isclick==ture){
+						this.context_canvas.fillStyle ="pink";
+						 this.context_canvas.fillRect(this.x, this.y, this.C_width,this.C_height);
+					 }
+			}
+		}
+
+		var canvas = new Canvas(big_canvas,context_canvas,"skyblue",200,200,400,400);
+		canvas.S_Canvas();
+
+		big_canvas.onmousemove = function(event){
+			const x = event.clientX - context_canvas.canvas.offsetLeft;
+			const y = event.clientY - context_canvas.canvas.offsetTop;
+
+			if(x >=200 && x<=500 && y>=200 && y<=500)
+			{
+				canvas.SS_Canvas();
+			}
+		else{
+			canvas.S_Canvas();
+		}
+	}
+
+		big_canvas.onmouseup = function(event){
+			const x = event.clientX - context_canvas.canvas.offsetLeft;
+			const y = event.clientY - context_canvas.canvas.offsetTop;
+
+			if(x >=200 && x<=500 && y>=200 && y<=500)
+			{
+				canvas.UClick_Canvas();
+			}
+		}
+
+		big_canvas.onmousedown = function(event){
+			const x = event.clientX - context_canvas.canvas.offsetLeft;
+			const y = event.clientY - context_canvas.canvas.offsetTop;
+
+			if(x >=200 && x<=500 && y>=200 && y<=500)
+			{
+				canvas.Click_Canvas();
+			}
+		}
+
+		
+		
+	</script>
+</body>
+</html>
