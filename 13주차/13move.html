@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+      <!--grid-template-columns: 1fr 1fr 1fr 1fr 가로 비율을 1대 1대 1대 1로 설정하는 태그 -->
+      <!--grid-template-rows: 1fr 1fr 1fr 1fr; 세로 비율을 1대 1대 1대 1로 설정하는 태그-->
+    <style>
+        #app
+        {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            background-color: #47d4ff;
+            border: 1px solid #df7aec;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr 1fr;
+            grid-gap: 10px;
+            padding: 10px;
+        }
+      
+        .inapp
+        {
+            border-radius: 10px;
+            border:1px solid #ffdde5;
+            background-color: #ddeeff;
+        }
+        .numapp
+        {   
+            border: 2px solid #5ffdae;  
+            left: 20px;
+            top: 20px;
+            border-radius: 20px;
+            width: 120px;
+            height: 120px;
+            background-color: darkcyan;
+            position: absolute;
+            line-height: 100px;
+            font-size:  100px;
+            font-family: cursive;
+            text-align: center;
+            border-radius: 15px;
+        }
+    
+    </style>
+</head>
+<body>
+    <script src="https://unpkg.com/vue@3"></script>
+
+
+    <center>
+    <div id="app">
+        <div class="inapp" v-for="index in divList">
+            <div class = "numapp">2</div>  
+        </div>
+    </center>
+
+    
+
+    <script>
+        const{createApp} = Vue;
+        createApp({
+            data(){
+
+                return{
+                    divList: 16 // 리스트 16개로 16칸 보드 만듬
+                }
+            }, mounted(){
+                console.log("app 마운트 성공");
+            }
+            }).mount("#app");
+
+            //document.addEventListener("keydown",(event) => {  
+            //console.log(event);  //키보드로 이동 이벤트
+            //});
+            document.addEventListener("keydown" , keyDownHandler,false);
+
+            var block = document.getElementsByClassName("numapp");
+            var i = 0;
+
+            function keyDownHandler(e){
+                if(e.key == 37 || e.key == "ArrowRight"){
+                    console.log(e);
+                for(i = 0; i <block.length; i++) {
+                    block[i].style.marginLeft = 457 + "px";
+                }               
+            }
+              else if(e.key == 39 || e.key == "ArrowLeft"){
+                    console.log(e);
+                for(i = 0; i <block.length; i++) {
+                    block[i].style.marginLeft = 0 + "px";
+              }
+            }
+              else if(e.key == 38 || e.key == "ArrowUp"){
+                     console.log(e);
+                     for(i = 0; i <block.length; i++) {
+                    block[i].style.marginTop = 0 + "px";
+              }
+            }
+            else if(e.key == 40 || e.key == "ArrowDown"){
+                     console.log(e);
+                     for(i = 0; i <block.length; i++) {
+                    block[i].style.marginTop = 457 + "px";
+              }
+            }
+
+        }
+
+           
+
+            
+    </script>
+</body>
+<script></script>
+</html>
