@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+      <!--grid-template-columns: 1fr 1fr 1fr 1fr 가로 비율을 1대 1대 1대 1로 설정하는 태그 -->
+      <!--grid-template-rows: 1fr 1fr 1fr 1fr; 세로 비율을 1대 1대 1대 1로 설정하는 태그-->
+    <style>
+        #table
+        {
+           
+        }
+        #table td{
+            border: 10px solid #7f65f3; 
+            width: 120px; 
+            height: 130px;
+            font-size: 50px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #score 
+        .c_2{background-color: #fafafa; color: #000000;}
+        .c_4{background-color: #f7c892; color: #000000;}
+        .c_8{background-color: #f39326; color: #ffffff;}
+        .c_16{background-color: #f8e433; color: #ffffff;}
+        .c_32{background-color: #e9f390; color: #ffffff;}
+        .c_64{background-color: #ecf3aa; color: #ffffff;}
+        .c_128{background-color: #d8f79e; color: #ffffff;}
+        .c_256{background-color: #c8f575; color: #ffffff;}
+        .c_512{background-color: #b5f049; color: #ffffff;}
+        .c_1024{background-color: #a3f806; color: #ffffff;}
+        .c_2048{background-color: #09f573; color: #ffffff;} 
+
+    </style>
+</head>
+
+<body>
+    
+    <center>
+    <table id="table"></table>
+    <div id="score">0</div>
+    </center>
+    <script>
+        const $table = document.getElementById('table');  //const로 테이블의 태그 변동되지 않게 선택
+        const $score = document.getElementById('score');
+         //주어진 문자열과 일치하는 id속성을 가진 요소 찾고, 나타내는 Element객체를 반환
+         // document.getElementById () 함수의 바로 가기로 $ 사용
+        let data = []; // data와 화면을 바꿔줄 함수 var대신 사용(변수 재할당을 하기 위해서)
+       
+
+        //$table -> $fragment -> $tr -> $td
+        function startGame() {
+            const $fragment = document.createDocumentFragment();
+            //$fragment 화면이 너무 느리게 나와서 쓰게됨,메모리에만 존재
+            [1,2,3,4].forEach(function () {
+                const rowData = [];
+                data.push(rowData);
+                const $tr = document.createElement('tr');
+                [1,2,3,4].forEach(() => {
+                    rowData.push(0);
+                    const $td = document.createElement('td');
+                    $tr.appendChild($td);
+                });
+                $fragment.appendChild($tr);
+
+            });
+            $table.appendChild($fragment);
+            put2ToRandomCell();
+            put2ToRandomCell();
+            draw();
+        }   //forEach = 배열에 활용이 가능한 메서드로, 파라미터로 주어진 함수를 배열 요소 각각에 대해 실행하는 메서드이다.
+
+        function put2ToRandomCell() { // put2ToRandomCell 2차원 반복문으로 빈칸을 찾아줌.
+            const emptyCells = [];   //알아낸 비어있는 칸을 emptyCells에 모아둠
+            data.forEach(function  (rowData, i){
+                rowData.forEach(function (cellData, j){
+                    if(!cellData) {
+                        emptyCells.push([i,j]);
+                    }
+                });
+            });
+            //randomCell == [i, j]
+            const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            
+            var rand = parseInt(Math.random() * 10); //0부터 10 까지 
+            if(rand<9)
+            {
+                data[randomCell[0]][randomCell[1]] = 2; //모아둔 emtyCells에서 랜덤하게 한칸을 뽑아 '2'를 넣음
+            }else{
+                data[randomCell[0]][randomCell[1]] = 4;
+            }
+               
+
+            
+        }
+        function draw() {
+            data.forEach((rowData, i) =>  {
+                rowData.forEach((cellData, j) =>{
+                    const $number = $table.children[i].children[j]; //// i: 줄  j: 칸
+                     //$table.children[i] = tr , children[j] = td를 나타냄
+                    if(cellData > 0) { //빈칸이 아니라면 숫자와 색을 넣어주고 아니면 안넣는다.
+                        $number.textContent = cellData;
+                        $number.className = 'c_' + cellData;
+                    } else {
+                        $number.textContent = '';
+                        $number.className = '';
+                    }
+                });
+            });
+        }
+         // createApp({
+            //data(){
+
+              //  return{
+                   // divList: 16 // 리스트 16개로 16칸 보드 만듬
+              //  }
+          //  },
+           //  mounted()
+           //  {
+            
+          //  }
+           // }).mount("#table");
+
+            //document.addEventListener("keydown",(event) => {  
+            //console.log(event);  //키보드로 이동 이벤트
+            //});
+        
+        startGame();
+    
+        function moveCells(direction){//direction 텍스트 방향 조정
+            switch (direction){
+                
+                case 'left':{   
+                    const newData = [[],[],[],[]]; //2차원 배열을 통해 빈칸을 먼저 찾는다.
+                    data.forEach((rowData, i) => {
+                        rowData.forEach((cellData, j) => {
+                            if (cellData){
+                                const currentRow = newData[i] //newData = 지금 줄  
+                                const prevData = currentRow[currentRow.length - 1];
+                                //prev 이전 데이터를  활용
+                                if(prevData == cellData){  //이전 값이 지금 값과 같을경우
+                                    const score = parseInt($score.textContent); //문자열을 정수로 바꾸는 함수를 이용 parseInt( string, n )
+                                    $score.textContent = score + currentRow[currentRow.length -1]*2;
+                                    currentRow[currentRow.length -1 ] *= -2;
+                                     //저장한 이전값과 같으면 서로 더해주거나 *2를 해야 되는대 이때 한번만 더해주기 위해서 *= -2를 해줌
+                                     //*2를 넣었더니 계속같은 숫자인 것으로 인식해 오류발생
+                                }
+                                 else
+                                  {
+                                    newData[i].push(cellData);  //arrayData에 배열 순서로 push하여 저장  
+                                }
+                                
+                            }
+                        });
+                    });
+                    console.log(newData);
+                    [1,2,3,4].forEach((rowData, i)=>{
+                        [1,2,3,4].forEach((cellData,j) =>{
+                            data[i][j] = Math.abs(newData[i][j]) || 0; 
+                            //음수가 된 값을 Math.abs()함수를 사용해 절대값으로 만들어준다.
+                        });
+                    });
+                    break;
+                }
+
+                case 'right':{
+                    const newData = [[],[],[],[]];
+                    data.forEach((rowData,i) => {
+                        rowData.forEach((cellData, j)=>{
+                            if(rowData[3-j]) {
+                                const currentRow = newData[i]  //복제할 tr의 row index
+                                const prevData = currentRow[currentRow.length -1];
+                                //prev 이전 데이터를  활용
+                                if (prevData == rowData[3-j]) {
+                                    const score = parseInt($score.textContent); //문자열을 정수로 바꾸는 함수를 이용 parseInt( string, n )
+                                    $score.textContent = score + currentRow[currentRow.length -1]*2;
+                                    currentRow[currentRow.length - 1]*= -2;
+                                } else {
+                                    newData[i].push(rowData[3-j]);
+                                }
+                            }
+                        });
+                    });
+                    console.log(newData);
+                    [1,2,3,4].forEach((rowData,i) => {
+                        [1,2,3,4].forEach((cellData,j) =>{
+                            data[i][3-j] = Math.abs(newData[i][j]) || 0;
+                        });
+                    })
+                    break;
+                }
+
+                case 'up':{
+                    const newData = [[],[],[],[]];
+                    data.forEach((rowData,i) =>{
+                        rowData.forEach((cellData,j) =>{
+                            if (cellData) {
+                                const currentRow = newData[j];
+                                const prevData = currentRow[currentRow.length -1];
+                                if (prevData == cellData) {
+                                    const score = parseInt($score.textContent);
+                                    $score.textContent = score + currentRow[currentRow.length -1]*2;
+                                    currentRow[currentRow.length -1] *= -2;
+                                } else {
+                                    newData[j].push(cellData);
+                                }
+                            }
+                        });
+                    });
+                    console.log(newData);
+                    [1,2,3,4].forEach((cellData, i) => {
+                        [1,2,3,4].forEach((rowData , j) => {
+                        data[j][i] = Math.abs(newData[i][j]) || 0;
+                        });
+                    });
+                    break;
+                }
+
+                case 'down':{
+                    const newData = [[],[],[],[]];
+                    data.forEach((rowData, i) => {
+                        rowData.forEach((cellData,j) =>{
+                            if(data[3-i][j]) {
+                                const currentRow = newData[j];
+                                const prevData = currentRow[currentRow.length - 1];
+                                if (prevData == data[3-i][j]) {
+                                    const score = parseInt($score.textContent);
+                                    $score.textContent = score + currentRow[currentRow.length -1]*2;
+                                    currentRow[currentRow.length -1] *= -2;
+                                } else {
+                                    newData[j].push(data[3 -i][j]);
+                                }
+                            }
+                        });
+                    });
+                    console.log (newData);
+                    [1,2,3,4].forEach((cellData,i) => {
+                        [1,2,3,4].forEach((rowData,j) => {
+                            data[3-j][i] = Math.abs(newData[i][j]) || 0;
+                        });
+                    })
+                    
+                    break;
+                }
+            }
+
+            if(data.flat().includes(2048)){
+                draw();
+                setTimeout(() => {
+                    alert();
+                },0);
+            }else if (!data.flat().includes(0)) {
+                alert();
+            }else {
+                put2ToRandomCell();
+                draw();    
+            }
+            
+        }
+            document.addEventListener('keyup',(event) => {
+                if(event.key == 'ArrowUp')
+                {
+                    moveCells('up');
+                }
+                else if(event.key == 'ArrowDown')
+                {
+                    moveCells('down');
+                }
+                else if(event.key == 'ArrowLeft')
+                {
+                    moveCells('left');
+                }
+                else if(event.key == 'ArrowRight')
+                {
+                    moveCells('right');
+                }
+            });
+        
+
+    </script>
+</body>
+</html>
