@@ -21,7 +21,7 @@
             text-align: center;
         }
 
-        #score 
+        #score {font-size:  40px;  font-weight: bold; text-align: center;}
         .c_2{background-color: #fafafa; color: #000000;}
         .c_4{background-color: #f7c892; color: #000000;}
         .c_8{background-color: #f39326; color: #ffffff;}
@@ -69,7 +69,6 @@
             });
             $table.appendChild($fragment);
             put2ToRandomCell();
-            put2ToRandomCell();
             draw();
         }   //forEach = 배열에 활용이 가능한 메서드로, 파라미터로 주어진 함수를 배열 요소 각각에 대해 실행하는 메서드이다.
 
@@ -89,13 +88,11 @@
             if(rand<9)
             {
                 data[randomCell[0]][randomCell[1]] = 2; //모아둔 emtyCells에서 랜덤하게 한칸을 뽑아 '2'를 넣음
-            }else{
+            }else {
                 data[randomCell[0]][randomCell[1]] = 4;
             }
-               
-
-            
         }
+        
         function draw() {
             data.forEach((rowData, i) =>  {
                 rowData.forEach((cellData, j) =>{
@@ -104,6 +101,7 @@
                     if(cellData > 0) { //빈칸이 아니라면 숫자와 색을 넣어주고 아니면 안넣는다.
                         $number.textContent = cellData;
                         $number.className = 'c_' + cellData;
+                    
                     } else {
                         $number.textContent = '';
                         $number.className = '';
@@ -247,13 +245,13 @@
                 }
             }
 
-            if(data.flat().includes(2048)){
+            if(data.flat().includes(2048)){ // flat 필요한데이터만 배열에서 추출해서 사용
                 draw();
                 setTimeout(() => {
-                    alert();
+                    alert(`와 이걸 깨네 승리! \n Score : ${$score.textContent}`);
                 },0);
             }else if (!data.flat().includes(0)) {
-                alert();
+                alert(`넌 러지다 다시 연습해와라. \n Score : ${$score.textContent}`);
             }else {
                 put2ToRandomCell();
                 draw();    
