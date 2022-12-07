@@ -1,11 +1,11 @@
-<html lang="en">
+<html lang="en"></html>
 
 <head>
     <title>2048</title>
 </head>
 
 <body>
-    <script src="https://unpkg.com/vue@3"></script>
+<script src="https://unpkg.com/vue@3"></script>
 
     
     <div id="app">
@@ -153,9 +153,21 @@
                 console.log("");
             },
         }).mount("#app");
+        //js 시작
+        var cellAr = new Array();
+        var element = null;
 
+        var row = 4;//행 길이 입력
+        var col = 4;//열 길이 입력
 
-        var cellAr = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]; // 배열을 생성
+        for (var i = 1; i <= row; i++) { // 행 할당
+            element = new Array(); // 임시 배열을 선언
+            for (var j = 1; j <= col; j++) { // 열 할당 (i 행의 열을 j만큼 할당함)
+                element.push(0); // push 함수를 통해 임시 배열에 0을 넣음 (초기값)
+            }
+            cellAr.push(element); // 임시 배열을 동적으로 할당할 배열에 push
+        } 
+    
         var bk = document.getElementsByClassName("backblock");
         var score = document.getElementById("score");
         var titlediv = document.getElementById("title");
@@ -166,10 +178,47 @@
         var startgame = 0;
         var End = 0;
         var startcheck = 0;
-        score.innerHTML = 0;
+        score.innerText = 0;
         var x = false;
 
-function StartNum() {   //랜덤하게 함수가 나오는 부분
+        const MakeElement = function(ename,attribute) //MakeElement 생성
+        // 이름과 속성 받아서 만드는 부분
+        {
+            const element = document.createElement(ename);
+            for(let property of attribute) {
+                const[k, v] = Object.entries(property)[0];
+                //Object.entries() 메서드는 어진 객체 자체의 속성 [key, value] 쌍의 배열을 반환
+                if(key == 'textContent' || key == 'innerText'){
+                element.textContent = v;// element.textContent = '내용' 형태로 텍스트 추가
+            }else {
+                    element.setAttribute(k , v);
+                  //element.setAttribute( ' 속성 이름 ', ' 속성 값' )
+                }    
+        }
+        return element;
+    };
+    class Map2
+    {
+        constructor() // 클래스가 가지고 있는 변수나 값들
+        {
+
+        }
+        Animation()  //  애니메이션 부분
+        {
+
+        }
+        BlockPrefab() // 모두 똑같은 속성을 가진 객체들
+        {
+
+        }
+        BlockMap() 
+        {
+
+        }
+
+    }
+
+    function StartNum() {   //랜덤하게 함수가 나오는 부분
 
     var rows = parseInt(Math.random() * 4); // rows = 행
     var column = parseInt(Math.random() * 4); //column = 열
@@ -192,10 +241,10 @@ function StartNum() {   //랜덤하게 함수가 나오는 부분
         for (var j = 0; j < 4; j++) {
             var k = i * 4 + j;
             if (cellAr[i][j] != "") { // == i,j
-                bk[k].innerHTML = cellAr[i][j]; //  행과 열에 들어간 값을 bk[]안에 값을 넣는다
+                bk[k].innerText = cellAr[i][j]; //  행과 열에 들어간 값을 bk[]안에 값을 넣는다
                 bk[k].id = 'num' + cellAr[i][j]; //값에 따라 ID를 이용해서 배경색을 바꿈
             } else {
-                bk[k].innerHTML = "";
+                bk[k].innerText = "";
                 bk[k].removeAttribute('id');
             }
         }
@@ -222,10 +271,10 @@ function CreateNum() {  // 비어있는 칸에 랜덤으로 숫자 생성
         for (var j = 0; j < 4; j++) {
             var k = i * 4 + j;
             if (cellAr[i][j] != "") { // == i,j
-                bk[k].innerHTML = cellAr[i][j]; //  행과 열에 들어간 값을 bk[]안에 값을 넣는다
+                bk[k].innerText = cellAr[i][j]; //  행과 열에 들어간 값을 bk[]안에 값을 넣는다
                 bk[k].id = 'num' + cellAr[i][j];  //값에 따라 ID를 이용해서 배경색을 바꿈
             } else {
-                bk[k].innerHTML = "";
+                bk[k].innerText = "";
                 bk[k].removeAttribute('id');
             }
         }
@@ -233,7 +282,7 @@ function CreateNum() {  // 비어있는 칸에 랜덤으로 숫자 생성
     
      //2048을 완성했을 때
      for (let index = 0; index < 16; index++) { // 15개의 div를 확인해주고
-        if (bk[index].innerHTML == 2048) { // 2048이 존재하는 경우
+        if (bk[index].innerText == 2048) { // 2048이 존재하는 경우
             endtitlediv.style.display = 'block'; // 게임 종료 
         }
 }
@@ -287,9 +336,9 @@ function left() {
         }
     }
     if(moveing){
-    	CreateNum();
+       CreateNum();
     } else {
-    	gameoverck();
+       gameoverck();
     }
 }
 
@@ -318,9 +367,9 @@ function right() { //  left의 반대
         }
     }
     if(moveing){
-    	CreateNum();
+       CreateNum();
     } else {
-    	gameoverck();
+       gameoverck();
     }
 }
 
@@ -349,9 +398,9 @@ function up() {
         }
     }
     if(moveing){
-    	CreateNum();
+       CreateNum();
     } else {
-    	gameoverck();
+       gameoverck();
     }
 }
 
@@ -380,9 +429,9 @@ function down() {
         }
     }
     if(moveing){
-    	CreateNum();
+       CreateNum();
     } else {
-    	gameoverck();
+       gameoverck();
     }
 }
 
@@ -410,7 +459,7 @@ function keylog(e) {
                 gameoverck();
                 right();
                 Score += 1;
-                score.innerHTML = Score;
+                score.innerText = Score;
             }
             break;
         case 'ArrowLeft':
@@ -418,7 +467,7 @@ function keylog(e) {
                 gameoverck();
                 left();
                 Score += 1;
-                score.innerHTML = Score;
+                score.innerText = Score;
             }
             break;
         case 'ArrowUp':
@@ -426,7 +475,7 @@ function keylog(e) {
                 gameoverck();
                 up();
                 Score += 1;
-                score.innerHTML = Score;
+                score.innerText = Score;
             }
             break;
         case 'ArrowDown':
@@ -434,7 +483,7 @@ function keylog(e) {
                 gameoverck();
                 down();
                 Score += 1;
-                score.innerHTML = Score;
+                score.innerText = Score;
             }
             break;
         case 'c':
@@ -448,5 +497,4 @@ window.onkeydown = keylog;
 
     </script>
 </body>
-
 </html>
