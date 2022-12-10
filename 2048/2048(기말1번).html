@@ -1,0 +1,382 @@
+<html lang="en"></html>
+
+<head>
+    <title>2048</title>
+</head>
+
+<body>
+<script src="https://unpkg.com/vue@3"></script>
+
+    
+    <div id="app">
+    <div class="backblock" v-for="index in backblocks"></div>
+    </div>
+    <div id="title">Enter로 시작</div>
+    <div id="endtitle">이걸 깨네? 계속 하려면 C 클릭</div>
+    <div id="score1"> SCORE : <div id="score">0</div>
+    </div>
+    <div id="gameovertitle">Gameover 다시하려면 F5클릭</div>
+     
+    <style>
+    *{
+        background-color: rgb(245, 216, 216);
+    }
+    
+    #app{
+        position: relative;
+        width: 600px;
+        height: 600px;
+        background-color: rgb(98, 180, 228);
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+        grid-gap: 10px;
+        padding : 10px;     
+        border-radius: 20;
+    }
+    .backblock{            
+        background-color: rgb(118, 130, 238);
+        text-align: center;   
+        line-height: 1.8;
+        font-size: 70;
+        font-family: sans-serif;
+        border-radius: 20;
+    }
+    
+    #num2 {
+        background-color: rgb(245, 129, 125);
+    }
+    #num4 {
+        background-color: rgb(238, 160, 71);
+    }
+    #num8 {
+        background-color: rgb(239, 241, 94);
+    }
+    #num16 {
+        background-color: rgb(167, 184, 17);
+    }
+    #num32 {
+        background-color: rgb(161, 236, 63);
+    }
+    #num64 {
+        background-color: rgb(81, 238, 50);
+    }
+    #num128 {
+        background-color: rgb(36, 241, 115);
+    }
+    #num256 {
+        background-color: rgb(100, 174, 218);
+    }
+    #num512 {
+        background-color: rgb(31, 157, 230);
+    }
+    #num1024 {
+        background-color: rgb(59, 116, 238);
+    }
+    #num2048 {
+        background-color: rgb(218, 54, 233);
+    }
+    #title {
+        position: absolute;
+        width: 700;
+        height: 700;
+        top: 7;
+        left: 7;
+        border: 1px solid black;
+        font-size: 40;
+        text-align: center;
+        line-height: 15;
+        background-color:rgb(224, 59, 95);
+    }
+    
+    
+    #score{
+    
+       
+       font-size: 40;
+        
+        
+    }
+
+    #gameovertitle{
+        display: none;
+        position: absolute;
+        width: 700;
+        height: 700;
+        top: 7;
+        left: 7;
+        border: 1px solid black;
+        font-size: 35;
+        text-align: center;
+        line-height: 15;
+        background-color: rgb(224, 59, 95);
+    }
+    
+    #endtitle {
+        position: absolute;
+        width: 700;
+        height: 700;
+        top: 7;
+        left: 7;
+        border: 1px solid black;
+        font-size: 35;
+        text-align: center;
+        line-height: 15;
+        background-color: rgb(195, 97, 240);
+        display: none;
+    }
+    
+   
+</style>
+  
+
+    <script type="text/javascript">
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    backblocks: 16,
+                }
+            },
+            mounted() {
+                console.log("");
+            },
+        }).mount("#app");
+        //js 시작
+
+       
+class Maps{
+    constructor(row, col){
+        this.Map = Array.from(Array(row), ()=> Array(col).fill(null));
+                              //row랑 col로 받아오는대 빈칸으로 넣는걸 선언
+        this.dapp = document.getElementById("app");
+        this.blockBoard = new Array();
+        this.State = 0; //  게임준비 , 게임 플레이 순
+        this.score = 0;
+    }
+
+    addRandomPositionBlock(X, Y, block){
+      block.setPlay(true);  //활동 
+      block.coord(X,Y); // 위치 설정
+      this.Map[Y][X] = block;
+      this.dapp.appendChild(block.div_element);
+        
+    }
+    removeblock(x,y){         // 블럭 제거  게임 준비 단계에서 쓸 부분
+     Pool.push(this.Map[X,Y]);
+     this.Map[X,Y] = null;
+    }
+    blockcompute(direction){ //텍스트 방향  move,maprotate에서 사용할 부분
+        //위로 올려서 회전 시켜야 함수 하나 구현으로 4방향이동이 가능해서 case0만 이동 나머지 회전
+        switch(direction)
+        {
+            case 0 : this.move(); break; // 위쪽 위쪽부터 시계방향으로 설정
+            case 1 : this.maprotate(3); this.move(); this.maprotate(1); break; //오른쪽
+            case 2 : this.maprotate(2); this.move(); this.maprotate(2); break; // 아래
+            case 3 : this.maprotate(2); this.move(); this.maprotate(2); break; // 왼쪽
+        }
+    }
+
+    maprotate(n){   // 한 함수만 이동하고  맵을 회전시키면 4방향으로 이동 되기 때문에 회전시킴
+        while (n--) {
+            var rotemp= Array.from(Array(4), ()=> Array(4).fill(null));
+            for (var i = 0; i < 4; i++)
+                for (var j = 0; j < 4; j++)
+                    rotemp[i][j] = this.Map[i][j];
+            for (var i = 0; i < 4; i++)
+                for (var j = 0; j < 4; j++)
+                    this.Map[j][3 - i] = rotemp[i][j];
+
+        }
+    }
+
+        Create(){
+        var zero = 0;
+        for (var i = 0; i < 4; i++)
+            for (var j = 0; j < 4; j++)
+                if (this.Map[i][j] == null)
+                    zero++;
+        while (true) {
+            for (var i = 0; i < 4; i++) {
+                for (var j = 0; j < 4; j++) {
+                    if (this.Map[i][j] == null) {
+                        var rand = parseInt(Math.random() * zero);
+                        if (rand == 0) {
+                            this.addRandomPositionBlock(j, i, Pool.pop());       
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+        
+        gameoverck(){ // 더 이상 움직일수 없고 안합쳐지면 게임 오버
+            for(var i=0;i<4;i++){      //행 부분 체크 
+                var colCheck = this.Map[i][0];
+                if(colCheck==null) return;
+                for(var j=1;j<4;j++){
+                    if(this.Map[i][j]==colCheck || this.Map[i][j]==0) return;
+                    else colCheck = this.Map[i][j];
+                }
+            }
+            for(var i=0;i<4;i++){   //   열 부분 체크
+                var rowCheck = this.Map[0][i];
+                if(rowCheck==0) return;
+                for(var j=1;j<4;j++){
+                    if(this.Map[j][i]==rowCheck || this.Map[j][i]==0) return;
+                    else rowCheck = this.Map[j][i];
+                }
+                // 둘다 체크 후 게임 종료
+            }
+            this.gameover();
+        }
+        gameover() {
+            this.State = 0;
+            gamaovertitle.style.display = 'block';  //게임오버 블럭을 가져오는 부분
+        }
+        gamesetting(){  // 게임 준비 즉 세팅 부분
+        this.State = 1;
+        this.score = 0;
+        document.getElementById("score").innerHTML = "Score: "+this.score.toString();
+        document.getElementById("gameovertitle").style.display = "none";
+
+        for(var i = 0; i < 4; i++){
+            for(var j = 0; j < 4; j++){
+                if(this.Map[i][j] == null) continue;
+                this.Map[i][j].removeblock(Pool);
+                this.Map[i][j] = null;
+            }
+        }
+
+        var num = parseInt(Math.random() * 2);
+        if(num == 1){        // 함수 한개 생성
+            var rand = parseInt(Math.random() * 16);  // 0~15개의 랜덤 함수
+            var y = parseInt(rand / 4);  
+            var x = rand % 4;
+            var num;
+            var rand = parseInt(Math.random() * 2);
+            if (rand == 0) num = 4;
+            else num = 2;
+
+            if (bmap.Map[y][x] == null){
+                bmap.addRandomPositionBlock(x,y,Pool.pop());
+                bmap.Map[y][x].changevalue(num);
+            }
+        }
+    }
+
+ }
+
+    
+class Block{
+    constructor(value){
+        this.Va = value;
+        this.Play = false;
+        this.XPos = 20;  // 네모가 딱 붙어서 20적용
+        this.YPos = 20;  // 네모가 딱 붙어서 20적용
+        this.div_element = document.createElement("div");
+        this.div_element.setAttribute("class","backblock");
+        this.div_element.innerText = this.Va;
+        this.div_element.setAttribute("id","num2"); // 선택한 요소의 속성 값을 num2로 정함
+    }
+    changevalue(value){  // value를 바꿔 블럭 색 지정
+        this.Va = value;
+        this.div_element.innerText = this.value;
+         switch(this.Value){
+            case 2: this.div_element.setAttribute("id","num2"); break;
+            case 4: this.div_element.setAttribute("id","num4"); break;
+            case 8: this.div_element.setAttribute("id","num8"); break;
+            case 16: this.div_element.setAttribute("id","num16"); break;
+            case 32: this.div_element.setAttribute("id","num32"); break;
+            case 64: this.div_element.setAttribute("id","num64"); break;
+            case 128: this.div_element.setAttribute("id","num128"); break;
+            case 256: this.div_element.setAttribute("id","num256"); break;
+            case 512: this.div_element.setAttribute("id","num512"); break;
+            case 1024: this.div_element.setAttribute("id","num1024"); break;
+            case 2048: this.div_element.setAttribute("id","num2048"); break;
+        }
+    }
+    
+    setPlay(isActivated){
+        this.backblocks.style.display = 'block';
+        this.Play = isActivated;  // true 면 해당 블럭의 디스플레이를 보여주고 none이면 안보여줌
+       // if(this.Active = true){
+      //      this.div_element.style.display = 'block';
+     //   }
+      //  else {
+      //      this.div_element.style.display = 'none';
+      //  }
+    }
+    
+    removeblock(pool2){    // 블럭 없애주는 부분
+        this.div_element.style.display = 'none';
+        this.Play = false;
+        this.changevalue(2);
+        this.XPos = 20;
+        this.XPos = 20;
+        pool2.push(this);
+    }
+}
+ 
+var bmap = new Maps(4,4);
+var Pool = new Array();
+for(var i = 0; i < 16; i++){
+    Pool.push(new Block(2));  
+}
+function start(){
+    bmap.gamesetting();
+}
+
+function right(){
+    bmap.blockcompute(1);
+}
+
+function left(){
+    bmap.blockcompute(3);
+}
+
+function up(){
+    bmap.blockcompute(0);
+}
+
+function down(){
+    bmap.blockcompute(2);
+}
+
+function Enterkey(){
+    this.title.style.display = 'none';
+    start();
+    bmap.blockcompute(0);
+    bmap.blockcompute(1);
+    bmap.blockcompute(2);
+    bmap.blockcompute(3);
+}
+
+function keylog(e){
+    console.log(e.key);
+    switch(e.key){
+        case 'Enter':
+            Enterkey();
+            break;
+        case 'ArrowRight':
+            right();
+            break;
+        case 'ArrowLeft':
+            left();
+            break;
+        case 'ArrowUp':
+            up();
+            break;
+        case 'ArrowDown':
+            down();
+            break;
+    }
+}
+
+window.onkeydown = keylog;
+        
+
+    </script>
+</body>
+</html>
